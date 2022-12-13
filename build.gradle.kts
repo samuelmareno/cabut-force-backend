@@ -27,8 +27,8 @@ dependencies {
     // JWT dependencies
     implementation("com.auth0:java-jwt:4.2.1")
 
-    compileOnly("org.projectlombok:lombok:1.18.24")
-    annotationProcessor("org.projectlombok:lombok:1.18.24")
+    // Password hashing
+    implementation("com.password4j:password4j:1.6.3")
 
     runtimeOnly("com.mysql:mysql-connector-j")
     testImplementation("org.springframework.boot:spring-boot-starter-test")

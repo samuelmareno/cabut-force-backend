@@ -4,8 +4,8 @@ import co.id.bankjateng.cabutforce.helper.WebResponse
 import co.id.bankjateng.cabutforce.helper.exceptions.UserDoesNotExistException
 import co.id.bankjateng.cabutforce.helper.logger
 import com.auth0.jwt.exceptions.JWTVerificationException
+import jakarta.security.auth.message.AuthException
 import jakarta.validation.ConstraintViolationException
-import org.hibernate.engine.jdbc.spi.SqlExceptionHelper
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -42,6 +42,19 @@ class ErrorController {
                 status = httpStatus.name,
                 code = httpStatus.value(),
                 data = userDoesNotExistException.message
+            ), httpStatus
+        )
+    }
+
+    @ExceptionHandler(value = [AuthException::class])
+    fun invalidPassword(authException: AuthException): ResponseEntity<WebResponse<String>> {
+        val httpStatus = HttpStatus.BAD_REQUEST
+
+        return ResponseEntity(
+            WebResponse(
+                status = httpStatus.name,
+                code = httpStatus.value(),
+                data = authException.message
             ), httpStatus
         )
     }

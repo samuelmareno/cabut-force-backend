@@ -9,6 +9,8 @@ import co.id.bankjateng.cabutforce.users.model.UserLoginRequest
 import co.id.bankjateng.cabutforce.users.model.UserResponse
 import co.id.bankjateng.cabutforce.users.repository.UserRepository
 import co.id.bankjateng.cabutforce.validation.ValidationUtil
+import com.password4j.Password
+import jakarta.security.auth.message.AuthException
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -30,11 +32,16 @@ class AuthServiceImpl(
         validationUtil.validate(registerUserRequest)
         logger(this.javaClass.name).info("Registering user with email: ${registerUserRequest.email}")
 
+        val hashedPassword = Password.hash(registerUserRequest.password)
+            .addRandomSalt(10)
+            .withScrypt()
+            .result
+
         val user = User(
             id = UUID.randomUUID().toString(),
             name = registerUserRequest.name!!,
             email = registerUserRequest.email!!,
-            password = registerUserRequest.password!!,
+            password = hashedPassword,
             role = registerUserRequest.role!!,
             lastLogin = registerUserRequest.lastLogin,
             createdAt = registerUserRequest.createdAt
@@ -54,8 +61,12 @@ class AuthServiceImpl(
     override fun login(userLoginRequest: UserLoginRequest): String {
         validationUtil.validate(userLoginRequest)
 
-        val user = userRepository.findByEmailAndPassword(userLoginRequest.email, userLoginRequest.password)
+        val user = userRepository.findUserByEmail(userLoginRequest.email)
             ?: throw UserDoesNotExistException("User does not exist")
+
+        if (!Password.check(userLoginRequest.password, user.password).withScrypt()) {
+            throw AuthException("Invalid password")
+        }
 
         updateUserLogin(user.email)
         return jwtUtil.generateToken(user)

@@ -2,7 +2,6 @@ package co.id.bankjateng.cabutforce.security
 
 import co.id.bankjateng.cabutforce.users.entity.User
 import co.id.bankjateng.cabutforce.users.model.CurrentUserResponse
-import co.id.bankjateng.cabutforce.users.repository.UserRepository
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
@@ -16,7 +15,7 @@ import java.util.*
  */
 
 @Component
-class JWTUtil(private val userRepository: UserRepository) {
+class JWTUtil {
     // Injects the jwt-secret property set in the resources/application.properties file
     @Value("\${jwt-secret}")
     private lateinit var jwtSecret: String
@@ -35,6 +34,7 @@ class JWTUtil(private val userRepository: UserRepository) {
             .sign(Algorithm.HMAC256(jwtSecret))
     }
 
+    // Verifies a JWT token and returns the user details
     @Throws(JWTVerificationException::class)
     fun extractCurrentUser(token: String): CurrentUserResponse {
         val jwt = JWT.require(Algorithm.HMAC256(jwtSecret))

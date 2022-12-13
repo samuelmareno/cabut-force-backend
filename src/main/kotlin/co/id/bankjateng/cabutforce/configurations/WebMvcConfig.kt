@@ -14,7 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 class WebMvcConfig(private val httpInterceptor: HttpInterceptor) : WebMvcConfigurer {
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(httpInterceptor)
+        registry.addInterceptor(httpInterceptor).addPathPatterns("/**").excludePathPatterns("/auth/**")
         super.addInterceptors(registry)
     }
 }
