@@ -13,6 +13,11 @@ import org.springframework.web.bind.annotation.*
  */
 
 @RestController
+@CrossOrigin(
+    origins = ["*"],
+    allowedHeaders = ["*"],
+    methods = [RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE]
+)
 @RequestMapping("/api/v1/users")
 class UserController(
     private val userService: UserService
@@ -78,6 +83,20 @@ class UserController(
                 status = "OK",
                 code = 200,
                 data = "User deleted"
+            )
+        )
+    }
+
+    @GetMapping(
+        value = ["test"],
+        produces = ["application/json"]
+    )
+    fun test(@RequestHeader("Authorization") bearer: String): ResponseEntity<WebResponse<UserResponse>> {
+        return ResponseEntity.ok(
+            WebResponse(
+                status = "OK",
+                code = 200,
+                data = userService.getUser(bearer)
             )
         )
     }

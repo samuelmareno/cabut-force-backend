@@ -1,14 +1,14 @@
-package co.id.bankjateng.cabutforce.users.controller
+package co.id.bankjateng.cabutforce.helper
 
-import co.id.bankjateng.cabutforce.helper.WebResponse
 import co.id.bankjateng.cabutforce.helper.exceptions.UserDoesNotExistException
-import co.id.bankjateng.cabutforce.helper.logger
 import com.auth0.jwt.exceptions.JWTVerificationException
 import jakarta.security.auth.message.AuthException
 import jakarta.validation.ConstraintViolationException
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.MissingRequestHeaderException
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice
  */
 
 @RestControllerAdvice
+@CrossOrigin(origins = ["*"], allowedHeaders = ["*"])
 class ErrorController {
 
     @ExceptionHandler(value = [ConstraintViolationException::class])
@@ -47,47 +48,94 @@ class ErrorController {
     }
 
     @ExceptionHandler(value = [AuthException::class])
-    fun invalidPassword(authException: AuthException): ResponseEntity<WebResponse<String>> {
+    fun invalidPassword(exception: AuthException): ResponseEntity<WebResponse<String>> {
         val httpStatus = HttpStatus.BAD_REQUEST
+        logger("ErrorController").severe(exception.message.toString())
 
         return ResponseEntity(
             WebResponse(
                 status = httpStatus.name,
                 code = httpStatus.value(),
-                data = authException.message
+                data = exception.message
             ), httpStatus
         )
     }
 
-    @ExceptionHandler(value = [JWTVerificationException::class])
-    fun unauthorized(jwtVerification: JWTVerificationException): ResponseEntity<WebResponse<String>> {
+    @ExceptionHandler(value = [JWTVerificationException::class, MissingRequestHeaderException::class])
+    fun unauthorized(exception: Exception): ResponseEntity<WebResponse<String>> {
         val httpStatus = HttpStatus.UNAUTHORIZED
 
+        logger("ErrorController").severe(exception.message.toString())
+
         return ResponseEntity(
-            WebResponse(
+            /* body = */ WebResponse(
                 status = httpStatus.name,
                 code = httpStatus.value(),
-                data = jwtVerification.message
-            ), httpStatus
+                data = "Unauthorized"
+            ),
+            /* status = */ httpStatus
         )
     }
 
     @ExceptionHandler(value = [DataIntegrityViolationException::class])
     fun sqlIntegrityViolation(exception: DataIntegrityViolationException): ResponseEntity<WebResponse<String>> {
-        val httpStatus = HttpStatus.BAD_REQUEST
+        var httpStatus = HttpStatus.BAD_REQUEST
+        logger("ErrorController").severe(exception.message.toString())
+
+
+        if (exception.message?.contains("user_email_unique") == true) {
+            return ResponseEntity(
+                WebResponse(
+                    status = httpStatus.name,
+                    code = httpStatus.value(),
+                    data = "User is already exist"
+                ), httpStatus
+            )
+        }
+
+        httpStatus = HttpStatus.INTERNAL_SERVER_ERROR
+        return ResponseEntity(
+            WebResponse(
+                status = httpStatus.name,
+                code = httpStatus.value(),
+                data = "Something went wrong"
+            ), httpStatus
+        )
+    }
+
+    @ExceptionHandler(value = [NoSuchElementException::class])
+    fun noSuchElement(exception: NoSuchElementException): ResponseEntity<WebResponse<String>> {
+        val httpStatus = HttpStatus.NOT_FOUND
+
+        logger("ErrorController").severe(exception.message.toString())
 
         return ResponseEntity(
             WebResponse(
                 status = httpStatus.name,
                 code = httpStatus.value(),
-                data = "User is already exist"
+                data = exception.message
+            ), httpStatus
+        )
+    }
+
+    @ExceptionHandler(value = [IllegalArgumentException::class])
+    fun forbidden(exception: IllegalArgumentException): ResponseEntity<WebResponse<String>> {
+        val httpStatus = HttpStatus.FORBIDDEN
+
+        logger("ErrorController").severe(exception.message.toString())
+
+        return ResponseEntity(
+            WebResponse(
+                status = httpStatus.name,
+                code = httpStatus.value(),
+                data = exception.message
             ), httpStatus
         )
     }
 
     @ExceptionHandler(value = [Exception::class])
     fun unhandledException(exception: Exception): ResponseEntity<WebResponse<String>> {
-        logger("error").warning(exception.toString())
+        logger("ErrorController").severe(exception.toString())
         val httpStatus = HttpStatus.INTERNAL_SERVER_ERROR
 
         return ResponseEntity(

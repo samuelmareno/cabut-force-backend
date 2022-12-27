@@ -6,6 +6,7 @@ import co.id.bankjateng.cabutforce.users.model.UserLoginRequest
 import co.id.bankjateng.cabutforce.users.model.UserResponse
 import co.id.bankjateng.cabutforce.users.service.AuthService
 import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -17,6 +18,7 @@ import java.net.URI
  * @Date 12/12/22
  */
 @RestController
+@CrossOrigin(origins = ["http://localhost:3000"], allowedHeaders = ["*"])
 @RequestMapping("/api/v1/auth")
 class AuthController(private val authService: AuthService) {
 

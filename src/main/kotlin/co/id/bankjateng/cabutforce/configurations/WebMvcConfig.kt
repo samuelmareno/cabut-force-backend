@@ -1,7 +1,6 @@
 package co.id.bankjateng.cabutforce.configurations
 
 import co.id.bankjateng.cabutforce.interceptors.HttpInterceptor
-import org.springframework.context.annotation.Configuration
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
@@ -10,11 +9,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
  * @Date 12/12/22
  */
 
-@Configuration
+//@Configuration  // cross origin issue
 class WebMvcConfig(private val httpInterceptor: HttpInterceptor) : WebMvcConfigurer {
 
     override fun addInterceptors(registry: InterceptorRegistry) {
-        registry.addInterceptor(httpInterceptor).addPathPatterns("/**").excludePathPatterns("/auth/**")
+        registry.addInterceptor(httpInterceptor).addPathPatterns("/**")
         super.addInterceptors(registry)
     }
 }
