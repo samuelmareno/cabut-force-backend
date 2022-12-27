@@ -7,8 +7,8 @@ import jakarta.persistence.*
  * @Date 13/12/22
  */
 
-@Entity
-data class Pipeline(
+@Entity(name = "pipeline")
+data class PipelineWithProductType(
     @Id
     val id: String,
 
@@ -25,8 +25,8 @@ data class Pipeline(
     @Enumerated(EnumType.STRING)
     val status: Status,
 
-    @Column(name = "product_type_id")
-    val productType: Int,
+    @OneToOne(fetch = FetchType.LAZY)
+    val productType: ProductType,
 
     @Column(name = "prospect_date")
     val prospectDate: Long,

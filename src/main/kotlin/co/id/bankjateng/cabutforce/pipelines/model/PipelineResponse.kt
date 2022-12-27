@@ -1,5 +1,6 @@
 package co.id.bankjateng.cabutforce.pipelines.model
 
+import co.id.bankjateng.cabutforce.pipelines.entity.ProductType
 import co.id.bankjateng.cabutforce.pipelines.entity.Status
 
 /**
@@ -14,7 +15,7 @@ data class PipelineResponse(
     val phoneNumber: String,
     val address: String?,
     val status: Status,
-    val productType: Int,
+    val productType: ProductType,
     val prospectDate: Long,
     val referralUser: String
 )

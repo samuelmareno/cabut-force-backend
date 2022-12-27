@@ -12,6 +12,5 @@ data class CreatePipelineRequest(
     val address: String?,
     val status: String,
     val productType: Int,
-    val prospectDate: Long,
-    val referralUser: String
+    val prospectDate: Long
 )

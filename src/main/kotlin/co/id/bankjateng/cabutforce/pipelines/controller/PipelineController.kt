@@ -21,15 +21,14 @@ class PipelineController(private val pipelineService: PipelineService) {
         return ResponseEntity.ok(WebResponse(status = "OK", code = 200, data = result))
     }
 
-    @GetMapping("/{refUser}/{startDate}/{endDate}")
+    @GetMapping("/{startDate}/{endDate}")
     fun getPipelinesBetween(
-        @PathVariable refUser: String,
         @PathVariable startDate: Long,
         @PathVariable endDate: Long,
         @RequestHeader("Authorization") bearer: String
     ): ResponseEntity<WebResponse<List<PipelineResponse>>> {
         val token = bearer.substringAfter("Bearer ")
-        val result = pipelineService.getPipelinesBetween(refUser, startDate, endDate, token)
+        val result = pipelineService.getPipelinesBetween(startDate, endDate, token)
         return ResponseEntity.ok(WebResponse(status = "OK", code = 200, data = result))
     }
 
