@@ -5,7 +5,6 @@ import co.id.bankjateng.cabutforce.users.model.CurrentUserResponse
 import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTVerificationException
-import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -17,8 +16,8 @@ import java.util.*
 @Component
 class JWTUtil {
     // Injects the jwt-secret property set in the resources/application.properties file
-    @Value("\${jwt-secret}")
-    private lateinit var jwtSecret: String
+
+    private val jwtSecret: String = System.getenv("JWT_SECRET")
 
     // Generates a JWT token
     fun generateToken(user: User): String {
@@ -48,6 +47,5 @@ class JWTUtil {
             email = jwt.getClaim("email").asString(),
             role = jwt.getClaim("role").asString()
         )
-
     }
 }

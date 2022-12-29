@@ -18,7 +18,7 @@ import java.net.URI
  * @Date 12/12/22
  */
 @RestController
-@CrossOrigin(origins = ["http://localhost:3000"], allowedHeaders = ["*"])
+@CrossOrigin
 @RequestMapping("/api/v1/auth")
 class AuthController(private val authService: AuthService) {
 

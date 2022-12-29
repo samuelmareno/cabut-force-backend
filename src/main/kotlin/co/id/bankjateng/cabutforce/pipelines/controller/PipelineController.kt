@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity
 
 @RestController
 @RequestMapping("/api/v1/pipelines")
+@CrossOrigin
 class PipelineController(private val pipelineService: PipelineService) {
     @GetMapping("/")
     fun getAllPipelines(@RequestHeader("Authorization") bearer: String): ResponseEntity<WebResponse<List<PipelineResponse>>> {
