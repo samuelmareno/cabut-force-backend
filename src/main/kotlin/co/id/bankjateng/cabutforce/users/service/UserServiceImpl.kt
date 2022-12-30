@@ -2,10 +2,13 @@ package co.id.bankjateng.cabutforce.users.service
 
 import co.id.bankjateng.cabutforce.helper.exceptions.UserDoesNotExistException
 import co.id.bankjateng.cabutforce.security.JWTUtil
+import co.id.bankjateng.cabutforce.users.model.ChangePasswordRequest
 import co.id.bankjateng.cabutforce.users.model.UpdateUserRequest
 import co.id.bankjateng.cabutforce.users.model.UserResponse
 import co.id.bankjateng.cabutforce.users.repository.UserRepository
 import co.id.bankjateng.cabutforce.validation.ValidationUtil
+import com.password4j.Password
+import jakarta.security.auth.message.AuthException
 import org.springframework.stereotype.Service
 
 /**
@@ -31,6 +34,23 @@ class UserServiceImpl(
                 createdAt = user.createdAt
             )
         }
+    }
+
+    override fun changePassword(bearer: String, changePasswordRequest: ChangePasswordRequest): Boolean {
+        val token = bearer.substringAfter("Bearer ")
+        val email = jwtUtil.extractCurrentUser(token).email
+        val user = userRepository.findUserByEmail(email)
+            ?: throw UserDoesNotExistException("User with email $email does not exist")
+
+        if (!Password.check(changePasswordRequest.oldPassword, user.password).withScrypt()) {
+            throw AuthException("Invalid password")
+        }
+        val hashedPassword = Password.hash(changePasswordRequest.newPassword)
+            .addRandomSalt(10)
+            .withScrypt()
+            .result
+        userRepository.save(user.copy(password = hashedPassword))
+        return true
     }
 
     override fun getUser(bearer: String): UserResponse {

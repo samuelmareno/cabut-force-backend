@@ -69,6 +69,26 @@ class UserController(
             )
         )
     }
+    @PutMapping(
+        value = ["/change-password", "/change-password/"],
+        consumes = ["application/json"],
+        produces = ["application/json"]
+    )
+    fun changeUserPassword(
+        @RequestBody changePasswordRequest: ChangePasswordRequest,
+        @RequestHeader("Authorization") bearer: String
+    ): ResponseEntity<WebResponse<String>> {
+        if (!userService.changePassword(bearer, changePasswordRequest)) {
+            throw Exception("Failed to change password")
+        }
+        return ResponseEntity.ok(
+            WebResponse(
+                status = "OK",
+                code = 200,
+                data = "Password changed successfully"
+            )
+        )
+    }
 
     @DeleteMapping(
         value = ["/delete"],
@@ -83,20 +103,6 @@ class UserController(
                 status = "OK",
                 code = 200,
                 data = "User deleted"
-            )
-        )
-    }
-
-    @GetMapping(
-        value = ["test"],
-        produces = ["application/json"]
-    )
-    fun test(@RequestHeader("Authorization") bearer: String): ResponseEntity<WebResponse<UserResponse>> {
-        return ResponseEntity.ok(
-            WebResponse(
-                status = "OK",
-                code = 200,
-                data = userService.getUser(bearer)
             )
         )
     }

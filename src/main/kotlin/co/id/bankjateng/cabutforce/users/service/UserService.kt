@@ -1,9 +1,6 @@
 package co.id.bankjateng.cabutforce.users.service
 
-import co.id.bankjateng.cabutforce.users.model.RegisterUserRequest
-import co.id.bankjateng.cabutforce.users.model.UpdateUserRequest
-import co.id.bankjateng.cabutforce.users.model.UserLoginRequest
-import co.id.bankjateng.cabutforce.users.model.UserResponse
+import co.id.bankjateng.cabutforce.users.model.*
 
 /**
  * @author Samuel Mareno
@@ -15,5 +12,6 @@ interface UserService {
 
     fun getUser(bearer: String): UserResponse
     fun updateUser(bearer: String, updateUserRequest: UpdateUserRequest): String
+    fun changePassword(bearer: String, changePasswordRequest: ChangePasswordRequest): Boolean
     fun deleteUser(bearer: String)
 }
