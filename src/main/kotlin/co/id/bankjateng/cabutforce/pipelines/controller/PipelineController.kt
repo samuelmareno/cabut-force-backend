@@ -34,35 +34,43 @@ class PipelineController(private val pipelineService: PipelineService) {
     }
 
     @GetMapping("/{id}")
-    fun getPipelineById(@PathVariable id: String, @RequestHeader("Authorization") bearer: String): PipelineResponse? {
+    fun getPipelineById(@PathVariable id: String, @RequestHeader("Authorization") bearer: String): ResponseEntity<WebResponse<PipelineResponse?>> {
         val token = bearer.substringAfter("Bearer ")
-        return pipelineService.getPipelineById(id, token)
+        val pipeline = pipelineService.getPipelineById(id, token)
+        return if (pipeline == null) {
+            ResponseEntity.notFound().build()
+        } else {
+            ResponseEntity.ok(WebResponse(status = "OK", code = 200, data = pipeline))
+        }
     }
 
     @PostMapping("/")
     fun createPipeline(
         @RequestBody createPipelineRequest: CreatePipelineRequest,
         @RequestHeader("Authorization") bearer: String
-    ): PipelineResponse {
+    ): ResponseEntity<WebResponse<PipelineResponse>> {
         val token = bearer.substringAfter("Bearer ")
-        return pipelineService.createPipeline(createPipelineRequest, token)
+        val pipeline =  pipelineService.createPipeline(createPipelineRequest, token)
+        return ResponseEntity.ok(WebResponse(status = "OK", code = 200, data = pipeline))
     }
 
     @PutMapping("/")
     fun updatePipeline(
         @RequestBody updatePipelineRequest: UpdatePipelineRequest,
         @RequestHeader("Authorization") bearer: String
-    ): PipelineResponse {
+    ): ResponseEntity<WebResponse<PipelineResponse>> {
         val token = bearer.substringAfter("Bearer ")
-        return pipelineService.updatePipeline(updatePipelineRequest, token)
+        val pipeline =  pipelineService.updatePipeline(updatePipelineRequest, token)
+        return ResponseEntity.ok(WebResponse(status = "OK", code = 200, data = pipeline))
     }
 
     @DeleteMapping("/{id}")
     fun deletePipeline(
         @PathVariable id: String,
         @RequestHeader("Authorization") bearer: String
-    ) {
+    ): ResponseEntity<WebResponse<String>> {
         val token = bearer.substringAfter("Bearer ")
         pipelineService.deletePipeline(id, token)
+        return ResponseEntity.ok(WebResponse(status = "OK", code = 200, data = "Pipeline has been deleted"))
     }
 }
