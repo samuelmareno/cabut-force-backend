@@ -28,6 +28,7 @@ class AuthServiceImpl(
     init {
         logger(this.javaClass.name).info("Initializing AuthServiceImpl")
     }
+
     override fun register(registerUserRequest: RegisterUserRequest): UserResponse {
         validationUtil.validate(registerUserRequest)
         logger(this.javaClass.name).info("Registering user with email: ${registerUserRequest.email}")
@@ -71,7 +72,6 @@ class AuthServiceImpl(
         updateUserLogin(user.email)
         return jwtUtil.generateToken(user)
     }
-
 
     private fun updateUserLogin(email: String): String {
         val user = userRepository.findUserByEmail(email)
