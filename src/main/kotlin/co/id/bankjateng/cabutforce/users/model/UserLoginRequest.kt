@@ -9,7 +9,7 @@ import jakarta.validation.constraints.NotBlank
 data class UserLoginRequest(
 
     @field:NotBlank(message = "Email cannot be empty")
-    val email: String,
+    val username: String,
 
     @field:NotBlank(message = "Password cannot be empty")
     val password: String

@@ -11,11 +11,13 @@ import co.id.bankjateng.cabutforce.pipelines.entity.Status
 data class PipelineResponse(
     val id: String,
     val nip: String,
+    val nik: String,
     val name: String,
     val phoneNumber: String,
     val address: String?,
     val status: Status,
     val productType: ProductType,
     val prospectDate: Long,
+    val nominal: Long,
     val referralUser: String
 )

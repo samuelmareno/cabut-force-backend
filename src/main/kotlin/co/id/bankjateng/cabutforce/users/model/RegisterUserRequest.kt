@@ -12,7 +12,7 @@ data class RegisterUserRequest(
     val name: String?,
 
     @field:NotBlank
-    val email: String?,
+    val username: String?,
 
     @field:NotBlank
     val password: String?,

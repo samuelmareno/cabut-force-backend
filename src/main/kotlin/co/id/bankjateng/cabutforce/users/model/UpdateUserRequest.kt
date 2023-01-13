@@ -10,9 +10,10 @@ import jakarta.validation.constraints.Null
 data class UpdateUserRequest(
 
     val name: String,
-    val email: String,
+    val username: String,
 
     @field:Null
     val password: String?,
+
     val role: String
 )

@@ -28,7 +28,7 @@ class UserServiceImpl(
             UserResponse(
                 id = user.id,
                 name = user.name,
-                email = user.email,
+                username = user.username,
                 role = user.role,
                 lastLogin = user.lastLogin,
                 createdAt = user.createdAt
@@ -38,9 +38,9 @@ class UserServiceImpl(
 
     override fun changePassword(bearer: String, changePasswordRequest: ChangePasswordRequest): Boolean {
         val token = bearer.substringAfter("Bearer ")
-        val email = jwtUtil.extractCurrentUser(token).email
-        val user = userRepository.findUserByEmail(email)
-            ?: throw UserDoesNotExistException("User with email $email does not exist")
+        val username = jwtUtil.extractCurrentUser(token).username
+        val user = userRepository.findUserByUsername(username)
+            ?: throw UserDoesNotExistException("User with username $username does not exist")
 
         if (!Password.check(changePasswordRequest.oldPassword, user.password).withScrypt()) {
             throw AuthException("Invalid password")
@@ -55,12 +55,12 @@ class UserServiceImpl(
 
     override fun getUser(bearer: String): UserResponse {
         val token = bearer.substringAfter("Bearer ")
-        val email = jwtUtil.extractCurrentUser(token).email
-        val user = userRepository.findUserByEmail(email) ?: throw UserDoesNotExistException("User does not exist")
+        val username = jwtUtil.extractCurrentUser(token).username
+        val user = userRepository.findUserByUsername(username) ?: throw UserDoesNotExistException("User does not exist")
         return UserResponse(
             id = user.id,
             name = user.name,
-            email = user.email,
+            username = user.username,
             role = user.role,
             lastLogin = user.lastLogin,
             createdAt = user.createdAt
@@ -71,14 +71,14 @@ class UserServiceImpl(
         validationUtil.validate(updateUserRequest)
 
         val token = bearer.substringAfter("Bearer ")
-        val email = jwtUtil.extractCurrentUser(token).email
-        val user = userRepository.findUserByEmail(email)
-            ?: throw UserDoesNotExistException("The User with email: $email doesn't exist")
+        val username = jwtUtil.extractCurrentUser(token).username
+        val user = userRepository.findUserByUsername(username)
+            ?: throw UserDoesNotExistException("The User with username: $username doesn't exist")
 
         userRepository.save(
             user.copy(
                 name = updateUserRequest.name,
-                email = updateUserRequest.email,
+                username = updateUserRequest.username,
                 password = updateUserRequest.password,
                 role = updateUserRequest.role
             )

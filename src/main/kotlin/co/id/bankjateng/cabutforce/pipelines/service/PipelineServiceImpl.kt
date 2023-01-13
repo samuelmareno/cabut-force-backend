@@ -8,6 +8,7 @@ import co.id.bankjateng.cabutforce.pipelines.model.UpdatePipelineRequest
 import co.id.bankjateng.cabutforce.pipelines.repository.PipelineRepository
 import co.id.bankjateng.cabutforce.pipelines.repository.ProductTypeRepository
 import co.id.bankjateng.cabutforce.security.JWTUtil
+import co.id.bankjateng.cabutforce.validation.ValidationUtil
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -20,7 +21,8 @@ import java.util.*
 class PipelineServiceImpl(
     private val pipelineRepository: PipelineRepository,
     private val productTypeRepository: ProductTypeRepository,
-    private val jwtUtil: JWTUtil
+    private val jwtUtil: JWTUtil,
+    private val validation: ValidationUtil
 ) : PipelineService {
     override fun getAllPipelines(token: String): List<PipelineResponse> {
         jwtUtil.extractCurrentUser(token)
@@ -29,13 +31,15 @@ class PipelineServiceImpl(
             PipelineResponse(
                 id = pipeline.id,
                 nip = pipeline.nip,
+                nik = pipeline.nik,
                 name = pipeline.name,
                 referralUser = pipeline.referralUser,
                 prospectDate = pipeline.prospectDate,
                 status = pipeline.status,
                 address = pipeline.address,
                 phoneNumber = pipeline.phoneNumber,
-                productType = pipeline.productType
+                productType = pipeline.productType,
+                nominal = pipeline.nominal
             )
         }
     }
@@ -56,13 +60,15 @@ class PipelineServiceImpl(
                 PipelineResponse(
                     id = pipeline.id,
                     nip = pipeline.nip,
+                    nik = pipeline.nik,
                     name = pipeline.name,
                     referralUser = pipeline.referralUser,
                     prospectDate = pipeline.prospectDate,
                     status = pipeline.status,
                     address = pipeline.address,
                     phoneNumber = pipeline.phoneNumber,
-                    productType = pipeline.productType
+                    productType = pipeline.productType,
+                    nominal = pipeline.nominal
                 )
             } ?: emptyList()
     }
@@ -78,23 +84,27 @@ class PipelineServiceImpl(
         return PipelineResponse(
             id = pipeline.id,
             nip = pipeline.nip,
+            nik = pipeline.nik,
             name = pipeline.name,
             referralUser = pipeline.referralUser,
             prospectDate = pipeline.prospectDate,
             status = pipeline.status,
             address = pipeline.address,
             phoneNumber = pipeline.phoneNumber,
-            productType = pipeline.productType
+            productType = pipeline.productType,
+            nominal = pipeline.nominal
         )
     }
 
     override fun createPipeline(createPipelineRequest: CreatePipelineRequest, token: String): PipelineResponse {
+        validation.validate(createPipelineRequest)
         val user = jwtUtil.extractCurrentUser(token)
         val productType = productTypeRepository.findById(createPipelineRequest.productType).get()
 
         val pipeline = PipelineWithProductType(
             id = UUID.randomUUID().toString(),
             nip = createPipelineRequest.nip,
+            nik = createPipelineRequest.nik,
             name = createPipelineRequest.name,
             referralUser = user.id,
             prospectDate = createPipelineRequest.prospectDate,
@@ -102,18 +112,21 @@ class PipelineServiceImpl(
             address = createPipelineRequest.address,
             phoneNumber = createPipelineRequest.phoneNumber,
             productType = productType,
+            nominal = createPipelineRequest.nominal
         )
         val savedPipeline = pipelineRepository.save(pipeline)
         return PipelineResponse(
             id = savedPipeline.id,
             nip = savedPipeline.nip,
+            nik = savedPipeline.nik,
             name = savedPipeline.name,
             referralUser = savedPipeline.referralUser,
             prospectDate = savedPipeline.prospectDate,
             status = savedPipeline.status,
             address = savedPipeline.address,
             phoneNumber = savedPipeline.phoneNumber,
-            productType = savedPipeline.productType
+            productType = savedPipeline.productType,
+            nominal = savedPipeline.nominal
         )
     }
 
@@ -144,13 +157,15 @@ class PipelineServiceImpl(
         return PipelineResponse(
             id = savedPipeline.id,
             nip = savedPipeline.nip,
+            nik = savedPipeline.nik,
             name = savedPipeline.name,
             referralUser = savedPipeline.referralUser,
             prospectDate = savedPipeline.prospectDate,
             status = savedPipeline.status,
             address = savedPipeline.address,
             phoneNumber = savedPipeline.phoneNumber,
-            productType = savedPipeline.productType
+            productType = savedPipeline.productType,
+            nominal = savedPipeline.nominal
         )
     }
 

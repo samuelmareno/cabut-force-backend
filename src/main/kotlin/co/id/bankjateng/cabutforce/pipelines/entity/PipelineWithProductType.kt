@@ -14,6 +14,8 @@ data class PipelineWithProductType(
 
     val nip: String,
 
+    val nik: String,
+
     val name: String,
 
     @Column(name = "phone_number")
@@ -30,6 +32,8 @@ data class PipelineWithProductType(
 
     @Column(name = "prospect_date")
     val prospectDate: Long,
+
+    val nominal: Long,
 
     @Column(name = "referral_user_id")
     val referralUser: String

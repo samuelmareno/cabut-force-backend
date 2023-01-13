@@ -7,6 +7,7 @@ import jakarta.validation.ConstraintViolationException
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.http.converter.HttpMessageNotReadableException
 import org.springframework.web.bind.MissingRequestHeaderException
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.ExceptionHandler
@@ -83,7 +84,7 @@ class ErrorController {
         logger("ErrorController").severe(exception.message.toString())
 
 
-        if (exception.message?.contains("user_email_unique") == true) {
+        if (exception.message == "user_username_unique") {
             return ResponseEntity(
                 WebResponse(
                     status = httpStatus.name,
@@ -133,9 +134,23 @@ class ErrorController {
         )
     }
 
+    @ExceptionHandler(value = [HttpMessageNotReadableException::class])
+    fun jsonParseError(exception: HttpMessageNotReadableException): ResponseEntity<WebResponse<String>> {
+        logger("ErrorController").severe(exception.toString())
+        val httpStatus = HttpStatus.BAD_REQUEST
+
+        return ResponseEntity(
+            WebResponse(
+                status = httpStatus.name,
+                code = httpStatus.value(),
+                data = "Please try again later"
+            ), httpStatus
+        )
+    }
+
     @ExceptionHandler(value = [Exception::class])
     fun unhandledException(exception: Exception): ResponseEntity<WebResponse<String>> {
-        logger("ErrorController").severe(exception.toString())
+        logger("ErrorController unhandled").severe(exception.toString())
         val httpStatus = HttpStatus.INTERNAL_SERVER_ERROR
 
         return ResponseEntity(

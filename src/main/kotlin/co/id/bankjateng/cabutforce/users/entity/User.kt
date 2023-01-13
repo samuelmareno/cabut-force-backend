@@ -20,7 +20,7 @@ data class User(
     val name: String,
 
     @Column
-    val email: String,
+    val username: String,
 
     @Column
     val password: String?,

@@ -15,7 +15,6 @@ import java.util.*
 
 @Component
 class JWTUtil {
-    // Injects the jwt-secret property set in the resources/application.properties file
 
     private val jwtSecret: String = System.getenv("JWT_SECRET")
 
@@ -25,7 +24,7 @@ class JWTUtil {
             .withSubject("User Details")
             .withIssuer("Cabut Force")
             .withClaim("id", user.id)
-            .withClaim("email", user.email)
+            .withClaim("username", user.username)
             .withClaim("name", user.name)
             .withClaim("role", user.role)
             .withIssuedAt(Date())
@@ -44,7 +43,7 @@ class JWTUtil {
         return CurrentUserResponse(
             id = jwt.getClaim("id").asString(),
             name = jwt.getClaim("name").asString(),
-            email = jwt.getClaim("email").asString(),
+            username = jwt.getClaim("username").asString(),
             role = jwt.getClaim("role").asString()
         )
     }

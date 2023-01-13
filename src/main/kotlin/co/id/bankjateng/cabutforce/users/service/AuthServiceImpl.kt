@@ -11,6 +11,7 @@ import co.id.bankjateng.cabutforce.users.repository.UserRepository
 import co.id.bankjateng.cabutforce.validation.ValidationUtil
 import com.password4j.Password
 import jakarta.security.auth.message.AuthException
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import java.util.*
 
@@ -31,7 +32,12 @@ class AuthServiceImpl(
 
     override fun register(registerUserRequest: RegisterUserRequest): UserResponse {
         validationUtil.validate(registerUserRequest)
-        logger(this.javaClass.name).info("Registering user with email: ${registerUserRequest.email}")
+        logger(this.javaClass.name).info("Registering user with email: ${registerUserRequest.username}")
+        val usernameIsExist = userRepository.existsUserByUsername(registerUserRequest.username!!)
+
+        if (usernameIsExist) {
+            throw DataIntegrityViolationException("user_username_unique")
+        }
 
         val hashedPassword = Password.hash(registerUserRequest.password)
             .addRandomSalt(10)
@@ -41,7 +47,7 @@ class AuthServiceImpl(
         val user = User(
             id = UUID.randomUUID().toString(),
             name = registerUserRequest.name!!,
-            email = registerUserRequest.email!!,
+            username = registerUserRequest.username,
             password = hashedPassword,
             role = registerUserRequest.role!!,
             lastLogin = registerUserRequest.lastLogin,
@@ -52,7 +58,7 @@ class AuthServiceImpl(
         return UserResponse(
             id = user.id,
             name = user.name,
-            email = user.email,
+            username = user.username,
             role = user.role,
             lastLogin = user.lastLogin,
             createdAt = user.createdAt
@@ -62,20 +68,20 @@ class AuthServiceImpl(
     override fun login(userLoginRequest: UserLoginRequest): String {
         validationUtil.validate(userLoginRequest)
 
-        val user = userRepository.findUserByEmail(userLoginRequest.email)
+        val user = userRepository.findUserByUsername(userLoginRequest.username)
             ?: throw UserDoesNotExistException("User does not exist")
 
         if (!Password.check(userLoginRequest.password, user.password).withScrypt()) {
             throw AuthException("Invalid password")
         }
 
-        updateUserLogin(user.email)
+        updateUserLogin(user.username)
         return jwtUtil.generateToken(user)
     }
 
-    private fun updateUserLogin(email: String): String {
-        val user = userRepository.findUserByEmail(email)
-            ?: throw UserDoesNotExistException("The User with email: $email doesn't exist")
+    private fun updateUserLogin(username: String): String {
+        val user = userRepository.findUserByUsername(username)
+            ?: throw UserDoesNotExistException("The User with username: $username doesn't exist")
 
         userRepository.save(user.copy(lastLogin = System.currentTimeMillis()))
         return "User last login has been updated"
