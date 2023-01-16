@@ -146,12 +146,14 @@ class PipelineServiceImpl(
 
         val updatedPipeline = pipeline.copy(
             nip = updatePipelineRequest.nip,
+            nik = updatePipelineRequest.nik,
             name = updatePipelineRequest.name,
             prospectDate = updatePipelineRequest.prospectDate,
             status = Status.valueOf(updatePipelineRequest.status.uppercase(Locale.getDefault())),
             address = updatePipelineRequest.address,
             phoneNumber = updatePipelineRequest.phoneNumber,
-            productType = productType
+            productType = productType,
+            nominal = updatePipelineRequest.nominal
         )
         val savedPipeline = pipelineRepository.save(updatedPipeline)
         return PipelineResponse(
