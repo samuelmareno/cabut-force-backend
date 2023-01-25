@@ -1,6 +1,7 @@
 package co.id.bankjateng.cabutforce.pipelines.controller
 
 import co.id.bankjateng.cabutforce.helper.WebResponse
+import co.id.bankjateng.cabutforce.helper.logger
 import co.id.bankjateng.cabutforce.pipelines.service.PipelineService
 import org.springframework.web.bind.annotation.*
 import co.id.bankjateng.cabutforce.pipelines.model.*
@@ -30,6 +31,18 @@ class PipelineController(private val pipelineService: PipelineService) {
     ): ResponseEntity<WebResponse<List<PipelineResponse>>> {
         val token = bearer.substringAfter("Bearer ")
         val result = pipelineService.getPipelinesBetween(startDate, endDate, token)
+        return ResponseEntity.ok(WebResponse(status = "OK", code = 200, data = result))
+    }
+
+    @GetMapping("/graphics/{startDate}/{endDate}")
+    fun getPipelinesBetweenGraphics(
+        @PathVariable startDate: Long,
+        @PathVariable endDate: Long,
+        @RequestHeader("Authorization") bearer: String
+    ): ResponseEntity<WebResponse<List<GraphicsPipelineResponse>>> {
+        val token = bearer.substringAfter("Bearer ")
+        val result = pipelineService.getPipelinesBetweenGraphics(startDate, endDate, token)
+        logger("Pipeline with graphics").info("result: $result")
         return ResponseEntity.ok(WebResponse(status = "OK", code = 200, data = result))
     }
 

@@ -3,6 +3,7 @@ package co.id.bankjateng.cabutforce.pipelines.service
 import co.id.bankjateng.cabutforce.pipelines.entity.PipelineWithProductType
 import co.id.bankjateng.cabutforce.pipelines.entity.Status
 import co.id.bankjateng.cabutforce.pipelines.model.CreatePipelineRequest
+import co.id.bankjateng.cabutforce.pipelines.model.GraphicsPipelineResponse
 import co.id.bankjateng.cabutforce.pipelines.model.PipelineResponse
 import co.id.bankjateng.cabutforce.pipelines.model.UpdatePipelineRequest
 import co.id.bankjateng.cabutforce.pipelines.repository.PipelineRepository
@@ -24,6 +25,7 @@ class PipelineServiceImpl(
     private val jwtUtil: JWTUtil,
     private val validation: ValidationUtil
 ) : PipelineService {
+
     override fun getAllPipelines(token: String): List<PipelineResponse> {
         jwtUtil.extractCurrentUser(token)
 
@@ -71,6 +73,25 @@ class PipelineServiceImpl(
                     nominal = pipeline.nominal
                 )
             } ?: emptyList()
+    }
+
+    override fun getPipelinesBetweenGraphics(
+        startDate: Long,
+        endDate: Long,
+        token: String
+    ): List<GraphicsPipelineResponse>? {
+        val user = jwtUtil.extractCurrentUser(token)
+
+        val result = pipelineRepository.getGraphicsPipeline(1673802000000, 1674061200000, user.id)
+
+        return result?.map {
+            GraphicsPipelineResponse(
+                month = it.month,
+                productType = it.productType,
+                deal = it.deal,
+                nominal = it.nominal
+            )
+        }
     }
 
     override fun getPipelineById(id: String, token: String): PipelineResponse? {

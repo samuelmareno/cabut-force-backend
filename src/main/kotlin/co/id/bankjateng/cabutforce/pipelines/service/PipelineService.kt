@@ -2,6 +2,7 @@ package co.id.bankjateng.cabutforce.pipelines.service
 
 import co.id.bankjateng.cabutforce.pipelines.model.CreatePipelineRequest
 import co.id.bankjateng.cabutforce.pipelines.model.PipelineResponse
+import co.id.bankjateng.cabutforce.pipelines.model.GraphicsPipelineResponse
 import co.id.bankjateng.cabutforce.pipelines.model.UpdatePipelineRequest
 
 /**
@@ -11,6 +12,7 @@ import co.id.bankjateng.cabutforce.pipelines.model.UpdatePipelineRequest
 interface PipelineService {
     fun getAllPipelines(token: String): List<PipelineResponse>
     fun getPipelinesBetween(startDate: Long, endDate: Long, token: String): List<PipelineResponse>
+    fun getPipelinesBetweenGraphics(startDate: Long, endDate: Long, token: String): List<GraphicsPipelineResponse>?
     fun getPipelineById(id: String, token: String): PipelineResponse?
     fun createPipeline(createPipelineRequest: CreatePipelineRequest, token: String): PipelineResponse
     fun updatePipeline(updatePipelineRequest: UpdatePipelineRequest, token: String): PipelineResponse
